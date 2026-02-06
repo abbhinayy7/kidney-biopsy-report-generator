@@ -1,0 +1,382 @@
+================================================================================
+KIDNEY BIOPSY REPORT GENERATOR - USER GUIDE
+================================================================================
+
+OVERVIEW
+========
+
+The Kidney Biopsy Report Generator is an interactive utility that allows you to
+enter patient and pathology information and instantly generate professional PDF
+reports.
+
+Instead of generating thousands of reports at once, you can now create reports
+on-demand by filling in the details as needed.
+
+================================================================================
+FEATURES
+========
+
+✓ User-friendly graphical interface
+✓ Organized form fields in 4 tabs
+✓ Input validation for required fields
+✓ Professional PDF report generation
+✓ Save reports to any location
+✓ Clear and reset functionality
+✓ Real-time file naming based on patient ID and name
+
+================================================================================
+INSTALLATION & STARTUP
+======================
+
+OPTION 1: Double-click to Launch (Easiest)
+──────────────────────────────────────────
+Simply double-click the file:
+  Launch_Report_Generator.bat
+
+This will automatically open the application.
+
+OPTION 2: Command Line Launch
+──────────────────────────────
+Open Command Prompt or PowerShell and run:
+  cd g:\dr_vinita\xml convert
+  python kidney_biopsy_report_generator.py
+
+================================================================================
+HOW TO USE
+==========
+
+STEP 1: Enter Patient Information
+──────────────────────────────────
+Tab: "Patient Information"
+
+Required Fields (marked as mandatory):
+  • Report ID       - Unique identifier for this report
+  • Patient Name    - Full name of the patient
+  • Age             - Patient age (e.g., "25 years" or "5 years")
+  • Gender          - Select from dropdown: Male or Female
+  • Receipt Date    - Date sample received (format: DD-MM-YYYY)
+  • Year            - Year of receipt (e.g., 2026)
+
+STEP 2: Enter Case Details
+───────────────────────────
+Tab: "Case Details"
+
+Fields (Optional):
+  • Case Reference Number  - CR No. for internal tracking
+  • Biopsy Number         - Sequential biopsy number
+  • Ward Number           - Hospital ward information
+  • Referred By           - Name of referring physician/doctor
+  • Reference Number      - Clinical reference number
+  • Specimen Received     - Description of tissue sample received
+
+STEP 3: Enter Clinical Findings
+────────────────────────────────
+Tab: "Clinical Findings"
+
+Fields (Optional):
+  • Microscopic Findings (Report)    - Detailed pathological findings
+    [Use this large text area for comprehensive microscopic observations]
+  
+  • Pathological Impression          - Clinical diagnosis and impression
+    [Summary of findings and disease classification]
+
+STEP 4: Add Report Details & Impressions
+─────────────────────────────────────────
+Tab: "Report & Impressions"
+
+Fields (Optional):
+  • Keywords/Diagnosis  - Relevant clinical keywords and diagnoses
+                         (separate multiple entries with commas)
+  • Clinical Notes      - Additional clinical observations
+  • Reported By         - Name of pathologist who reviewed the case
+  • Report Date         - Date report was finalized (DD-MM-YYYY)
+  • ICD Code            - International Classification of Diseases code
+
+================================================================================
+GENERATING A PDF REPORT
+=======================
+
+PROCESS:
+────────
+
+1. Fill in all required fields in "Patient Information" tab
+   (Report ID, Name, Age, Gender, Receipt Date, Year)
+
+2. Optionally fill in other fields from remaining tabs
+
+3. Click the "Generate PDF Report" button
+
+4. A dialog will appear asking where to save the PDF file
+   - Default name will be: {ReportID}_{PatientName}.pdf
+   - Choose your desired location
+   - Click "Save"
+
+5. The application will create a professional PDF report
+
+6. A confirmation message will appear with the save location
+
+EXAMPLE:
+────────
+If you enter:
+  Report ID: 1234
+  Patient Name: John Smith
+  
+The default filename will be: 1234_John Smith.pdf
+
+================================================================================
+FIELD DESCRIPTIONS
+===================
+
+Patient Information
+───────────────────
+Report ID           Unique identifier for tracking this report
+Patient Name        Full name of the patient
+Age                 Patient age (include unit, e.g., "25 years")
+Gender              Male or Female
+Receipt Date        Date tissue was received at lab (DD-MM-YYYY)
+Year                Calendar year of receipt
+
+Case Details
+────────────
+CR No.              Case Reference Number
+Biopsy No.          Biopsy sample sequential number
+Ward No.            Hospital ward number
+Referred By         Name of referring physician
+Reference No.       Clinical reference number
+Specimen Received   Type/description of tissue sample
+
+Clinical Findings
+─────────────────
+Report              Detailed microscopic findings from pathology examination
+Impression          Clinical pathological impression and diagnosis
+
+Report & Impressions
+────────────────────
+Keywords            Clinical keywords and diagnoses (comma-separated)
+Note                Additional clinical observations and recommendations
+Reported By         Pathologist name
+Date of Report      Date report was completed/signed (DD-MM-YYYY)
+ICD Code            International Classification of Diseases code
+
+================================================================================
+COMMON DIAGNOSES & KEYWORDS
+============================
+
+For the Keywords field, you can use common kidney disease diagnoses:
+
+Primary Glomerulonephritis:
+  • Minimal Change Disease (MCD)
+  • IgA Nephropathy
+  • Focal Segmental Glomerulosclerosis (FSGS)
+  • Membranoproliferative Glomerulonephritis (MPGN)
+  • Membranous Glomerulonephritis
+
+Secondary Glomerulonephritis:
+  • Lupus Nephritis
+  • Diabetic Nephropathy
+  • IgA Vasculitis (IgAV)
+  • Post-infectious GN
+  • ANCA-associated Vasculitis
+
+Other Findings:
+  • Acute Tubular Necrosis (ATN)
+  • Chronic Glomerulonephritis
+  • Crescentic Glomerulonephritis
+  • Interstitial Nephritis
+
+================================================================================
+BUTTONS & FUNCTIONS
+===================
+
+Generate PDF Report
+───────────────────
+Validates all required fields and creates a PDF report.
+If any required field is empty, an error message will appear.
+
+Clear All
+─────────
+Clears all entered information from all fields.
+A confirmation dialog will ask if you're sure.
+
+Exit
+────
+Closes the application.
+Unsaved data will be lost.
+
+================================================================================
+TIPS & BEST PRACTICES
+=====================
+
+1. DATE FORMAT
+   Always use DD-MM-YYYY format for dates
+   Examples: 03-02-2026, 15-01-2025, 31-12-2024
+
+2. PATIENT AGE
+   Include the unit: "25 years", "5 years", "60 years"
+   Or: "25 Yrs", "5 Yrs"
+
+3. UNIQUE IDs
+   Use unique Report IDs for each patient
+   Examples: 1001, 1002, KB-2026-001
+
+4. LONG TEXT
+   For Microscopic Findings and Impression, write detailed information
+   The PDF will automatically wrap text to fit the page
+
+5. MULTIPLE KEYWORDS
+   Separate multiple diagnoses with commas:
+   "Lupus Nephritis, IgG deposits, Basement membrane thickening"
+
+6. SAVE LOCATION
+   Choose a location where you have write permission
+   Create separate folders for different years/departments
+
+7. BACKUP
+   Keep backup copies of important reports
+   Consider saving to a network drive for team access
+
+================================================================================
+EXAMPLE REPORT CREATION
+=======================
+
+SCENARIO: Dr. Smith needs to create a report for patient examination
+
+INPUT DATA:
+───────────
+Report ID:          345
+Patient Name:       Rajesh Kumar
+Age:                28 years
+Gender:             Male
+Receipt Date:       03-02-2026
+Year:               2026
+Referred By:        Dr. R Pandey
+Biopsy No.:         KB-345/26
+Ward No.:           Nephrology Ward
+
+Microscopic Findings:
+"The kidney biopsy showed 15 glomeruli which appear enlarged. Light microscopy
+reveals a pattern consistent with lupus nephritis with immune complex deposits."
+
+Pathological Impression:
+"Findings are suggestive of diffuse lupus nephritis, WHO class IV. Recommend
+clinical correlation and follow-up with serological markers."
+
+Keywords: Lupus nephritis, IgG deposits, Subendothelial deposits
+Reported By: Dr. Vineeta V Batra
+Report Date: 03-02-2026
+ICD Code: N02.8
+
+RESULT:
+───────
+PDF generated as: 345_Rajesh Kumar.pdf
+Professional report ready for clinical use and patient records
+
+================================================================================
+TROUBLESHOOTING
+===============
+
+Problem: Application won't launch
+─────────────────────────────────
+Solution 1: Make sure Python is installed
+  - Check: python --version in Command Prompt
+  - If not found, install Python from python.org
+
+Solution 2: Run as Administrator
+  - Right-click Launch_Report_Generator.bat
+  - Select "Run as administrator"
+
+Problem: Required fields error appears
+──────────────────────────────────────
+Solution: Fill in these mandatory fields:
+  ✓ Report ID
+  ✓ Patient Name
+  ✓ Age
+  ✓ Gender
+  ✓ Receipt Date
+
+Problem: Cannot save PDF file
+──────────────────────────────
+Solution 1: Choose a different folder
+Solution 2: Check folder permissions
+Solution 3: Ensure you have disk space
+
+Problem: Text appears cut off in PDF
+────────────────────────────────────
+Solution: Keep descriptions concise, or use shorter font in long texts
+
+Problem: Special characters not showing in PDF
+───────────────────────────────────────────────
+Solution: Avoid special symbols; use standard letters and numbers
+
+================================================================================
+TECHNICAL INFORMATION
+=====================
+
+Application Details:
+  Name:            Kidney Biopsy Report Generator
+  Language:        Python 3.x
+  GUI Framework:   Tkinter (built-in with Python)
+  PDF Engine:      fpdf2
+  File Format:     PDF/A compliant
+
+System Requirements:
+  • Python 3.6 or higher
+  • Windows 7 or newer
+  • 10 MB free disk space
+  • Standard permissions to write files
+
+Output:
+  • PDF reports in standard format
+  • Compatible with all PDF viewers
+  • Professional printing ready
+  • Searchable and archivable
+
+================================================================================
+KEYBOARD SHORTCUTS
+==================
+
+Tab                 Move to next field
+Shift + Tab         Move to previous field
+Ctrl + A            Select all text (in text fields)
+Ctrl + C            Copy selected text
+Ctrl + V            Paste copied text
+Alt + G             Generate PDF Report (if configured)
+Alt + C             Clear All fields
+Alt + X             Exit application
+
+================================================================================
+SUPPORT & FEEDBACK
+==================
+
+For issues or feature requests:
+  • Check this user guide first
+  • Review the troubleshooting section
+  • Verify all input data is correct
+  • Check system requirements
+
+Common Questions:
+
+Q: Can I edit a generated PDF?
+A: The generated PDFs are standard PDFs and can be edited with PDF editors
+
+Q: Can I create a report offline?
+A: Yes, the application works completely offline
+
+Q: How do I batch create multiple reports?
+A: Create each report separately using this utility, or use the batch
+   PDF generation script (see REPORTS_ANALYSIS.txt)
+
+Q: Where are reports saved?
+A: You choose the location when saving each report
+
+================================================================================
+VERSION INFORMATION
+===================
+
+Application:  Kidney Biopsy Report Generator v1.0
+Release Date: February 3, 2026
+Last Updated: February 3, 2026
+
+================================================================================
+END OF USER GUIDE
+================================================================================
