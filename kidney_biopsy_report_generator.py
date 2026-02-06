@@ -171,18 +171,18 @@ class ReportGeneratorApp:
         # Bind double-click to show preview
         self.db_tree.bind('<Double-1>', self.on_report_double_click)
         
-        # Populate database view
-        self.refresh_database_view()
-        
-        # Info label
+        # Info label (must be created BEFORE refresh_database_view())
         info_frame = ttk.Frame(self.database_frame)
         info_frame.pack(fill=tk.X, padx=10, pady=5)
-        self.db_info_label = ttk.Label(info_frame, text="Double-click any row to view report details", 
+        self.db_info_label = ttk.Label(info_frame, text="Loading reports...", 
                                        font=("Arial", 9))
         self.db_info_label.pack(side=tk.LEFT)
         
-        # Store mapping for tree items
+        # Store mapping for tree items (must be initialized BEFORE refresh)
         self.tree_item_map = {}
+        
+        # Populate database view (now db_info_label and tree_item_map are initialized)
+        self.refresh_database_view()
     
     def refresh_database_view(self):
         """Refresh the database view with all reports"""
