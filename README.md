@@ -400,10 +400,6 @@ Potential features for future versions:
 
 ---
 
-## ⭐ If you like this project, please consider giving it a star!
 
----
-
-**Made with ❤️ by Dr. Vinita**
 
 *Last Updated: February 6, 2026*
