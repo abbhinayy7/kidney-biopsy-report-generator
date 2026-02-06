@@ -126,10 +126,14 @@ class ReportGeneratorApp:
         search_frame = ttk.Frame(self.database_frame)
         search_frame.pack(fill=tk.X, padx=10, pady=5)
         
-        ttk.Label(search_frame, text="Search:").pack(side=tk.LEFT, padx=5)
-        self.search_entry = ttk.Entry(search_frame, width=30)
+        ttk.Label(search_frame, text="Global Search (in all fields):").pack(side=tk.LEFT, padx=5)
+        self.search_entry = ttk.Entry(search_frame, width=40)
         self.search_entry.pack(side=tk.LEFT, padx=5)
         self.search_entry.bind('<KeyRelease>', lambda e: self.filter_database_view())
+        
+        help_label = ttk.Label(search_frame, text="🔍 Searches patient names, biopsy #, report content, impression, keywords, notes, etc.", 
+                              font=("Arial", 8), foreground="gray")
+        help_label.pack(side=tk.LEFT, padx=5)
         
         # Treeview frame
         tree_frame = ttk.Frame(self.database_frame)
@@ -217,8 +221,8 @@ class ReportGeneratorApp:
         self.db_info_label.config(text=f"Total Reports: {count} | Double-click any row to view details")
     
     def filter_database_view(self):
-        """Filter database view based on search text"""
-        search_text = self.search_entry.get().lower()
+        """Filter database view with global search - searches ALL fields including report content, impressions, keywords, etc."""
+        search_text = self.search_entry.get().lower().strip()
         
         # Clear current view
         for item in self.db_tree.get_children():
@@ -227,7 +231,7 @@ class ReportGeneratorApp:
         if not self.data_map:
             return
         
-        # Re-populate with filtered results
+        # Re-populate with filtered results - search entire record
         count = 0
         for biopsy_num, record in self.data_map.items():
             report_id = record.get('ID', '')
@@ -236,15 +240,32 @@ class ReportGeneratorApp:
             sex = record.get('Sex', '') or record.get('Gender', '')
             receipt_date = record.get('Receipt Date', '')
             
-            # Search in all visible fields
-            search_fields = [str(report_id), str(biopsy_num), str(name), str(age), str(sex), str(receipt_date)]
-            if any(search_text in field.lower() for field in search_fields):
+            # GLOBAL SEARCH: Search in ALL fields of the record
+            # This includes: Patient name, ID, Biopsy No, Age, Sex, Report content,
+            # Impression, Keywords, Clinical Notes, Case details, etc.
+            search_found = False
+            if search_text:
+                for field_name, field_value in record.items():
+                    # Convert all field values to string and search
+                    searchable_text = str(field_value).lower()
+                    if search_text in searchable_text:
+                        search_found = True
+                        break
+            else:
+                # Empty search shows all records
+                search_found = True
+            
+            if search_found:
                 item_id = self.db_tree.insert('', 'end', text=report_id,
                                              values=(biopsy_num, name, age, sex, receipt_date))
                 self.tree_item_map[item_id] = record
                 count += 1
         
-        self.db_info_label.config(text=f"Found: {count} report(s)")
+        # Update info label with search results
+        if search_text:
+            self.db_info_label.config(text=f"Global Search Results: Found {count} report(s) matching '{search_text}'")
+        else:
+            self.db_info_label.config(text=f"Total Reports: {count} | Double-click to view details")
     
     def on_report_double_click(self, event):
         """Handle double-click on a report in database view"""
