@@ -14,7 +14,7 @@ class ReportGeneratorApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Kidney Biopsy Report Generator")
-        self.root.geometry("900x800")
+        self.root.geometry("1100x850")
         
         # Dictionary to store all fields - INITIALIZE FIRST
         self.fields = {}
@@ -36,23 +36,45 @@ class ReportGeneratorApp:
                          font=("Arial", 14, "bold"))
         title.pack(pady=10)
         
-        # Create notebook for tabs
-        self.notebook = ttk.Notebook(self.main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
-
+        # Data map (ID -> row dict)
+        self.data_map = {}
+        
+        # Load data first
+        try:
+            self.load_reports_data()
+        except Exception:
+            self.data_map = {}
+        
+        # Create main notebook for two modes: Generator and Database
+        self.main_notebook = ttk.Notebook(self.main_frame)
+        self.main_notebook.pack(fill=tk.BOTH, expand=True)
+        
+        # MODE 1: Report Generator
+        self.generator_frame = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.generator_frame, text="Report Generator")
+        self.create_generator_mode()
+        
+        # MODE 2: Reports Database
+        self.database_frame = ttk.Frame(self.main_notebook)
+        self.main_notebook.add(self.database_frame, text="Reports Database")
+        self.create_database_mode()
+    
+    def create_generator_mode(self):
+        """Create the Report Generator mode with form tabs"""
         # Quick toolbar: load by Biopsy Number and bulk generate
-        toolbar = ttk.Frame(self.main_frame)
-        toolbar.pack(fill=tk.X, pady=4)
+        toolbar = ttk.Frame(self.generator_frame)
+        toolbar.pack(fill=tk.X, pady=4, padx=10)
 
         ttk.Label(toolbar, text="Load Biopsy Number:").pack(side=tk.LEFT, padx=(4,2))
         self.load_id_entry = ttk.Entry(toolbar, width=20)
         self.load_id_entry.pack(side=tk.LEFT, padx=2)
         ttk.Button(toolbar, text="Load", command=self.load_by_id).pack(side=tk.LEFT, padx=4)
         ttk.Button(toolbar, text="Bulk Generate", command=self.bulk_generate_from_ids).pack(side=tk.LEFT, padx=8)
-
-        # Data map (ID -> row dict)
-        self.data_map = {}
         
+        # Create notebook for form tabs
+        self.notebook = ttk.Notebook(self.generator_frame)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
         # Tab 1: Patient Information
         self.tab1 = ttk.Frame(self.notebook)
         self.notebook.add(self.tab1, text="Patient Information")
@@ -74,8 +96,8 @@ class ReportGeneratorApp:
         self.create_report_tab()
         
         # Button frame
-        button_frame = ttk.Frame(self.main_frame)
-        button_frame.pack(fill=tk.X, pady=10)
+        button_frame = ttk.Frame(self.generator_frame)
+        button_frame.pack(fill=tk.X, pady=10, padx=10)
         
         self.generate_btn = ttk.Button(button_frame, text="Generate PDF Report", 
                                        command=self.generate_report)
@@ -86,15 +108,155 @@ class ReportGeneratorApp:
         self.clear_btn.pack(side=tk.LEFT, padx=5)
         
         self.exit_btn = ttk.Button(button_frame, text="Exit", 
-                                   command=root.quit)
+                                   command=self.root.quit)
         self.exit_btn.pack(side=tk.RIGHT, padx=5)
+    
+    def create_database_mode(self):
+        """Create the Reports Database visualization mode"""
+        # Header
+        header_frame = ttk.Frame(self.database_frame)
+        header_frame.pack(fill=tk.X, padx=10, pady=10)
         
-        # Attempt to load reports_data.json (optional)
-        try:
+        ttk.Label(header_frame, text="All Reports Database", 
+                 font=("Arial", 12, "bold")).pack(side=tk.LEFT)
+        
+        ttk.Button(header_frame, text="Refresh", command=self.refresh_database_view).pack(side=tk.RIGHT, padx=5)
+        
+        # Search frame
+        search_frame = ttk.Frame(self.database_frame)
+        search_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        ttk.Label(search_frame, text="Search:").pack(side=tk.LEFT, padx=5)
+        self.search_entry = ttk.Entry(search_frame, width=30)
+        self.search_entry.pack(side=tk.LEFT, padx=5)
+        self.search_entry.bind('<KeyRelease>', lambda e: self.filter_database_view())
+        
+        # Treeview frame
+        tree_frame = ttk.Frame(self.database_frame)
+        tree_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+        
+        # Create Treeview with scrollbars
+        tree_scroll_y = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL)
+        tree_scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        tree_scroll_x = ttk.Scrollbar(tree_frame, orient=tk.HORIZONTAL)
+        tree_scroll_x.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        self.db_tree = ttk.Treeview(tree_frame, 
+                                    yscrollcommand=tree_scroll_y.set,
+                                    xscrollcommand=tree_scroll_x.set,
+                                    height=20)
+        self.db_tree.pack(fill=tk.BOTH, expand=True)
+        
+        tree_scroll_y.config(command=self.db_tree.yview)
+        tree_scroll_x.config(command=self.db_tree.xview)
+        
+        # Define columns
+        self.db_tree['columns'] = ('biopsy_no', 'name', 'age', 'sex', 'receipt_date')
+        self.db_tree.column('#0', width=0, stretch=tk.NO)
+        self.db_tree.column('biopsy_no', anchor=tk.W, width=120)
+        self.db_tree.column('name', anchor=tk.W, width=150)
+        self.db_tree.column('age', anchor=tk.CENTER, width=50)
+        self.db_tree.column('sex', anchor=tk.CENTER, width=50)
+        self.db_tree.column('receipt_date', anchor=tk.W, width=100)
+        
+        # Create headings
+        self.db_tree.heading('#0', text='ID', anchor=tk.W)
+        self.db_tree.heading('biopsy_no', text='Biopsy Number', anchor=tk.W)
+        self.db_tree.heading('name', text='Patient Name', anchor=tk.W)
+        self.db_tree.heading('age', text='Age', anchor=tk.CENTER)
+        self.db_tree.heading('sex', text='Gender', anchor=tk.CENTER)
+        self.db_tree.heading('receipt_date', text='Receipt Date', anchor=tk.W)
+        
+        # Bind double-click to show preview
+        self.db_tree.bind('<Double-1>', self.on_report_double_click)
+        
+        # Populate database view
+        self.refresh_database_view()
+        
+        # Info label
+        info_frame = ttk.Frame(self.database_frame)
+        info_frame.pack(fill=tk.X, padx=10, pady=5)
+        self.db_info_label = ttk.Label(info_frame, text="Double-click any row to view report details", 
+                                       font=("Arial", 9))
+        self.db_info_label.pack(side=tk.LEFT)
+        
+        # Store mapping for tree items
+        self.tree_item_map = {}
+    
+    def refresh_database_view(self):
+        """Refresh the database view with all reports"""
+        # Clear existing items
+        for item in self.db_tree.get_children():
+            self.db_tree.delete(item)
+        
+        self.tree_item_map = {}
+        
+        # Reload data
+        if not self.data_map:
             self.load_reports_data()
-        except Exception:
-            # silently ignore if file not present; user can still fill form manually
-            self.data_map = {}
+        
+        if not self.data_map:
+            self.db_info_label.config(text="No data loaded. Reports database is empty.")
+            return
+        
+        # Populate tree
+        count = 0
+        for biopsy_num, record in self.data_map.items():
+            report_id = record.get('ID', '')
+            name = record.get('Name', '') or record.get('Patient Name', '')
+            age = record.get('Age', '')
+            sex = record.get('Sex', '') or record.get('Gender', '')
+            receipt_date = record.get('Receipt Date', '')
+            
+            item_id = self.db_tree.insert('', 'end', text=report_id,
+                                         values=(biopsy_num, name, age, sex, receipt_date))
+            self.tree_item_map[item_id] = record
+            count += 1
+        
+        self.db_info_label.config(text=f"Total Reports: {count} | Double-click any row to view details")
+    
+    def filter_database_view(self):
+        """Filter database view based on search text"""
+        search_text = self.search_entry.get().lower()
+        
+        # Clear current view
+        for item in self.db_tree.get_children():
+            self.db_tree.delete(item)
+        
+        if not self.data_map:
+            return
+        
+        # Re-populate with filtered results
+        count = 0
+        for biopsy_num, record in self.data_map.items():
+            report_id = record.get('ID', '')
+            name = record.get('Name', '') or record.get('Patient Name', '')
+            age = record.get('Age', '')
+            sex = record.get('Sex', '') or record.get('Gender', '')
+            receipt_date = record.get('Receipt Date', '')
+            
+            # Search in all visible fields
+            search_fields = [str(report_id), str(biopsy_num), str(name), str(age), str(sex), str(receipt_date)]
+            if any(search_text in field.lower() for field in search_fields):
+                item_id = self.db_tree.insert('', 'end', text=report_id,
+                                             values=(biopsy_num, name, age, sex, receipt_date))
+                self.tree_item_map[item_id] = record
+                count += 1
+        
+        self.db_info_label.config(text=f"Found: {count} report(s)")
+    
+    def on_report_double_click(self, event):
+        """Handle double-click on a report in database view"""
+        selection = self.db_tree.selection()
+        if not selection:
+            return
+        
+        item_id = selection[0]
+        record = self.tree_item_map.get(item_id)
+        if record:
+            self.show_report_preview(record)
+    
     def create_patient_tab(self):
         """Create patient information input fields"""
         frame = ttk.Frame(self.tab1)
