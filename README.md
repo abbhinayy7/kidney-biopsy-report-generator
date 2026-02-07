@@ -329,7 +329,6 @@ Developed for medical professionals to streamline the creation and management of
 
 ## 📧 Contact & Support
 
-- **Email:** your.email@example.com
 - **Issues:** Report bugs via [GitHub Issues](https://github.com/yourusername/kidney-biopsy-report-generator/issues)
 - **Questions:** Start a [GitHub Discussion](https://github.com/yourusername/kidney-biopsy-report-generator/discussions)
 
